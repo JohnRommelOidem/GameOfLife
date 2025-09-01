@@ -49,4 +49,5 @@ html, body {
     padding:0.5rem;
     gap:0.5rem;
     background-color: white;
+    position:absolute;
 }

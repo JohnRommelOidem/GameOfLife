@@ -212,7 +212,6 @@ sizeInput.addEventListener("change", ()=>{
     }
 });
 speedSlider.addEventListener("input", ()=>{
-    render();
     speedInput.value=speedSlider.value;
 });
 speedInput.addEventListener("change", ()=>{
@@ -220,7 +219,6 @@ speedInput.addEventListener("change", ()=>{
     if (!isNaN(value)){
         speedSlider.value = Math.min(speedSlider.max, Math.max(speedSlider.min, value));
         speedInput.value = speedSlider.value;
-        render();
     } else {
         speedSlider.value = initialSpeed;
         speedInput.value = initialSpeed;

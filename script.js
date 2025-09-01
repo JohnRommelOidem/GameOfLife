@@ -15,11 +15,7 @@ let arraySize;
 let probabilityArray;
 let percentAlive;
 const dpr = window.devicePixelRatio || 1;
-let canvasSize = 800||Math.floor(
-    (Math.min(window.innerHeight, window.innerWidth)) / arraySize
-) * arraySize;
-canvas.width = canvasSize*dpr;
-canvas.height = canvasSize*dpr;
+let canvasSize;
 let isDrawing = false, stoppedCauseClicked = false, running = false, handle = null;
 
 const ctx = canvas.getContext("2d");
@@ -101,6 +97,11 @@ function render(){
         {length: arraySize},
         () => Array.from({length:arraySize}, ()=> Math.random())
     )
+    canvasSize = Math.max(Math.floor(
+        (Math.min(window.innerHeight, window.innerWidth)) / arraySize
+    ) * arraySize, 300)
+    canvas.width = canvasSize*dpr;
+    canvas.height = canvasSize*dpr;
     cellSize = canvasSize/arraySize
     gameOfLife = new GameOfLife(probabilityArray, percentAlive);
 }

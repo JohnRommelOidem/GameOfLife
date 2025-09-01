@@ -1,0 +1,52 @@
+html, body {
+    display:flex;
+    min-height: 100%;
+    justify-content:center;
+    align-items:center;
+    flex-direction: column;
+    background-color: gray;
+}
+
+.container{
+    display:flex;
+    align-items:center;
+    justify-content: center;
+    position: relative;
+}
+.slider-row{
+    display:flex;
+    flex-direction: row;
+    justify-content: center;
+    width:100%;
+    gap:0;
+}
+.slider-unit{
+    display:flex;
+    width:100%;
+    align-items: center;
+    flex-direction: column;
+    justify-content: center;
+}
+.slider{
+    width:100%;
+}
+.slider-input{
+    width:1.5rem;
+    text-align: right;
+    border:none;
+    background-color: inherit;
+    margin:-0.3rem;
+    margin-left:-0.4rem;
+}
+#game-of-life-buttons button{
+    width:3.5rem;
+}
+#game-of-life-controls{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content: center;
+    padding:0.5rem;
+    gap:0.5rem;
+    background-color: white;
+}

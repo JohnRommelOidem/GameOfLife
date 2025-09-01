@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Game of Life</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <div id="asdf"></div>
+    <canvas id="game-of-life"></canvas> 
+    <div id="game-of-life-controls" class="controls">
+      <div id="game-of-life-buttons">
+        <button id="playBtn">Play</button>
+        <button id="stepBtn">Step</button>
+        <button id="clearBtn">Clear</button>
+        <button id="resetBtn">Reset</button>
+      </div>
+      <div class="slider-unit">
+        <div class="slider-row">
+          <label for="speedSlider">
+            Speed:
+            <input type="text" id="speedInput"class="slider-input" autocomplete="off">
+            ms
+          </label>
+        </div>
+        <input type="range" min = "20" max="300" value="50" id="speedSlider" class="slider">
+      </div>
+      <div class="slider-unit">
+        <div class="slider-row">
+          <label for="sizeSlider">
+            Size:
+            <input type="text" id="sizeInput"class="slider-input" autocomplete="off">
+            px
+          </label>
+        </div>
+        <input type="range" min = "10" max="300" value="100" step="10" id="sizeSlider" class="slider">
+      </div>
+    </div>
+  </div>
+</body>
+<script src="https://cdn.jsdelivr.net/npm/gpu.js@latest/dist/gpu-browser.min.js"></script>
+<script src="script.js"></script>
+</html>

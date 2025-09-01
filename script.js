@@ -18,6 +18,12 @@ const dpr = window.devicePixelRatio || 1;
 let canvasSize;
 let isDrawing = false, stoppedCauseClicked = false, running = false, handle = null;
 
+if (window.innerHeight>window.innerWidth){
+    document.body.classList.add("portrait");
+} else {
+    document.body.classList.remove("portrait");
+}
+
 const ctx = canvas.getContext("2d");
 const aliveColor = "black";
 const deadColor = "white";
@@ -97,9 +103,9 @@ function render(){
         {length: arraySize},
         () => Array.from({length:arraySize}, ()=> Math.random())
     )
-    canvasSize = Math.max(Math.floor(
+    canvasSize = Math.min(Math.floor(
         (Math.min(window.innerHeight, window.innerWidth)) / arraySize
-    ) * arraySize, 300)
+    ) * arraySize, 800)
     canvas.width = canvasSize*dpr;
     canvas.height = canvasSize*dpr;
     ctx.scale(dpr, dpr);

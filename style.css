@@ -50,3 +50,7 @@ html, body {
     gap:0.5rem;
     background-color: white;
 }
+
+.portrait .container {
+    flex-direction: column;
+}

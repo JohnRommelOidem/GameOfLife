@@ -102,6 +102,7 @@ function render(){
     ) * arraySize, 300)
     canvas.width = canvasSize*dpr;
     canvas.height = canvasSize*dpr;
+    ctx.scale(dpr, dpr);
     cellSize = canvasSize/arraySize
     gameOfLife = new GameOfLife(probabilityArray, percentAlive);
 }

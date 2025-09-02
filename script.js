@@ -10,6 +10,7 @@ const speedSlider = document.getElementById("speedSlider");
 const speedInput = document.getElementById("speedInput");
 const initialSpeed = speedSlider.value;
 speedInput.value = speedSlider.value;
+const padding = 10;
 
 let arraySize;
 let probabilityArray;
@@ -17,13 +18,6 @@ let percentAlive;
 const dpr = window.devicePixelRatio || 1;
 let canvasSize;
 let isDrawing = false, stoppedCauseClicked = false, running = false, handle = null;
-
-if (window.innerHeight>window.innerWidth){
-    document.body.classList.add("portrait");
-} else {
-    document.body.classList.remove("portrait");
-}
-
 const ctx = canvas.getContext("2d");
 const aliveColor = "black";
 const deadColor = "white";
@@ -104,13 +98,17 @@ function render(){
         () => Array.from({length:arraySize}, ()=> Math.random())
     )
     canvasSize = Math.min(Math.floor(
-        (Math.min(window.innerHeight, window.innerWidth)) / arraySize
-    ) * arraySize, 800)
-    canvas.width = canvasSize*dpr;
-    canvas.height = canvasSize*dpr;
-    ctx.scale(dpr, dpr);
+        (Math.min(window.innerHeight, window.innerWidth)-padding)
+    ), 800)
+    canvas.width = canvasSize;
+    canvas.height = canvasSize;
     cellSize = canvasSize/arraySize
     gameOfLife = new GameOfLife(probabilityArray, percentAlive);
+    if (window.innerHeight>window.innerWidth){
+        document.body.classList.add("portrait");
+    } else {
+        document.body.classList.remove("portrait");
+    }
 }
 render();
 
@@ -232,3 +230,4 @@ speedInput.addEventListener("change", ()=>{
         speedInput.value = initialSpeed;
     }
 });
+window.addEventListener("resize", render);

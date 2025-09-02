@@ -121,6 +121,7 @@ function getClientCoords(e){
 }
 
 function cellChangeClick(e){
+    e.preventDefault();
     isDrawing = true;
     const rect = canvas.getBoundingClientRect();
     const [clientX, clientY] = getClientCoords(e);
@@ -136,6 +137,7 @@ function cellChangeClick(e){
 }
 
 function cellChangeMove(e){
+    e.preventDefault();
     const rect = canvas.getBoundingClientRect();
     const [clientX, clientY] = getClientCoords(e);
     const indexX = Math.floor((clientX - rect.left) / cellSize);
@@ -148,6 +150,7 @@ function cellChangeMove(e){
 }
 
 function cellChangeStop(){
+    e.preventDefault();
     isDrawing = false;
     changedCells.clear();
     if (stoppedCauseClicked) {
@@ -161,9 +164,9 @@ canvas.addEventListener("mouseup", cellChangeStop);
 canvas.addEventListener("mouseleave", cellChangeStop);
 canvas.addEventListener("mousemove",cellChangeMove);
 
-canvas.addEventListener("touchstart", cellChangeClick);
-canvas.addEventListener("touchend", cellChangeStop);
-canvas.addEventListener("touchmove",cellChangeMove);
+canvas.addEventListener("touchstart", cellChangeClick, {passive:false});
+canvas.addEventListener("touchend", cellChangeStop, {passive:false});
+canvas.addEventListener("touchmove",cellChangeMove, {passive:false});
 
 function start() {
     running = true;

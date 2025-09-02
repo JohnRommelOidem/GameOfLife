@@ -163,8 +163,15 @@ canvas.addEventListener("mouseup", cellChangeStop);
 canvas.addEventListener("mouseleave", cellChangeStop);
 canvas.addEventListener("mousemove",cellChangeMove);
 
-canvas.addEventListener("touchstart", cellChangeClick, {passive:false});
-canvas.addEventListener("touchend", cellChangeStop, {passive:false});
+canvas.addEventListener("touchstart", (e)=>{
+    cellChangeClick(e);
+    document.body.style.overscrollBehavior = "contain";
+}, {passive:false});
+canvas.addEventListener("touchend", (e)=>{
+    e.preventDefault();
+    cellChangeStop(e);
+    document.body.style.overscrollBehavior = "";
+}, {passive:false});
 canvas.addEventListener("touchmove",cellChangeMove, {passive:false});
 
 function start() {

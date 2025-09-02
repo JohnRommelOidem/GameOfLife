@@ -169,7 +169,7 @@ canvas.addEventListener("touchstart", (e)=>{
 }, {passive:false});
 canvas.addEventListener("touchend", (e)=>{
     e.preventDefault();
-    cellChangeStop(e);
+    cellChangeStop();
     document.body.style.overscrollBehavior = "";
 }, {passive:false});
 canvas.addEventListener("touchmove",cellChangeMove, {passive:false});

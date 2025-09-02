@@ -1,38 +1,44 @@
 const canvas = document.getElementById("game-of-life");
+const ctx = canvas.getContext("2d");
+
 const playBtn = document.getElementById("playBtn");
 const stepBtn = document.getElementById("stepBtn");
+const clearBtn = document.getElementById("clearBtn");
 const resetBtn = document.getElementById("resetBtn");
 const drawBtn = document.getElementById("drawBtn");
+
 const sizeSlider = document.getElementById("sizeSlider");
 const sizeInput = document.getElementById("sizeInput");
-const initialSize = sizeSlider.value;
-sizeInput.value = sizeSlider.value;
 const speedSlider = document.getElementById("speedSlider");
 const speedInput = document.getElementById("speedInput");
+
+const initialSize = sizeSlider.value;
+sizeInput.value = sizeSlider.value;
 const initialSpeed = speedSlider.value;
 speedInput.value = speedSlider.value;
-const padding = 10;
-let drawOrErase = true;
+
+const PADDING = 10;
+const ALIVE_COLOR = "black";
+const DEAD_COLOR = "white";
+const INITIAL_PERCENT = 20;
 
 let arraySize;
-let probabilityArray;
-let percentAlive;
-const dpr = window.devicePixelRatio || 1;
-let canvasSize;
-let isDrawing = false, stoppedCauseClicked = false, running = false, handle = null;
-const ctx = canvas.getContext("2d");
-const aliveColor = "black";
-const deadColor = "white";
-const changedCells = new Set();
 let gameOfLife;
+let lastX, lastY;
+let isDrawing = false; 
+let stoppedCauseClicked = false; 
+let running = false; 
+let drawOrErase = true;
+let handle;
+let lastTime = 0;
+
+const changedCells = new Set();
 const gpu = new GPU.GPU();
-const initialPercent = 20;
 
 class GameOfLife {
     constructor(array){
         this.array = array;
-        const arraySize = array.length;
-        this.cellSize = canvasSize/arraySize;
+        this.arraySize = array.length;
         this.kernelFunction = gpu.createKernel(function(array){
             let sum = 0;
             const size = this.output.x;
@@ -44,19 +50,21 @@ class GameOfLife {
                 }
             }
             return (sum === 3 || (array[this.thread.y][this.thread.x] === 1 && sum === 2)) ? 1 : 0;
-        }).setOutput([arraySize, arraySize]);
+        }).setOutput([this.arraySize, this.arraySize]);
         this.draw();
+    }
+    drawCell(x, y, aliveOrDead){
+        ctx.fillStyle = aliveOrDead? ALIVE_COLOR:DEAD_COLOR;
+        const x1 = Math.floor(x * cellSize);
+        const y1 = Math.floor(y * cellSize);
+        const x2 = Math.floor((x + 1) * cellSize);
+        const y2 = Math.floor((y + 1) * cellSize);
+        ctx.fillRect(x1, y1, x2 - x1, y2 - y1);
     }
     draw(){
         this.array.forEach((row, y)=>{
             row.forEach((cellValue, x)=>{
-                ctx.fillStyle = cellValue? aliveColor:deadColor;
-                const x1 = Math.floor(x * this.cellSize);
-                const y1 = Math.floor(y * this.cellSize);
-                const x2 = Math.floor((x + 1) * this.cellSize);
-                const y2 = Math.floor((y + 1) * this.cellSize);
-
-                ctx.fillRect(x1, y1, x2 - x1, y2 - y1);
+                this.drawCell(x, y, cellValue);
             })
         })
     }
@@ -64,13 +72,7 @@ class GameOfLife {
         this.array.forEach((row, y)=>{
             row.forEach((cellValue, x)=>{
                 if (cellValue != oldArray[y][x]){
-                    ctx.fillStyle = cellValue? aliveColor:deadColor;
-                    const x1 = Math.floor(x * this.cellSize);
-                    const y1 = Math.floor(y * this.cellSize);
-                    const x2 = Math.floor((x + 1) * this.cellSize);
-                    const y2 = Math.floor((y + 1) * this.cellSize);
-
-                    ctx.fillRect(x1, y1, x2 - x1, y2 - y1);
+                    this.drawCell(x, y, cellValue);
                 }
             })
         })
@@ -82,64 +84,39 @@ class GameOfLife {
     }
     toggleCell(x, y){
         this.array[y][x] = drawOrErase ? 1:0;
-        ctx.fillStyle = drawOrErase ? aliveColor:deadColor;
-        const x1 = Math.floor(x * this.cellSize);
-        const y1 = Math.floor(y * this.cellSize);
-        const x2 = Math.floor((x + 1) * this.cellSize);
-        const y2 = Math.floor((y + 1) * this.cellSize);
-
-        ctx.fillRect(x1, y1, x2 - x1, y2 - y1);
+        this.drawCell(x, y, drawOrErase);
     }
 }
 
-function renderArraySizeChange(){
+function render(){
     arraySize = sizeSlider.value; 
-    probabilityArray = Array.from(
+    const probabilityArray = Array.from(
         {length: arraySize},
         () => Array.from({length:arraySize}, ()=> Math.random())
     )
-    canvasSize = Math.min(Math.floor(
-        (Math.min(window.innerHeight, window.innerWidth)-padding)
+    const canvasSize = Math.min(Math.floor(
+        (Math.min(window.innerHeight, window.innerWidth)-PADDING)
     ), 800)
     canvas.width = canvasSize;
     canvas.height = canvasSize;
     cellSize = canvasSize/arraySize;
-    gameOfLife = new GameOfLife(probabilityArray.map(row=>row.map(p=>p<initialPercent/100?1:0)));
+    gameOfLife = new GameOfLife(probabilityArray.map(row=>row.map(p=>p<INITIAL_PERCENT/100?1:0)));
     if (window.innerHeight>window.innerWidth){
         document.body.classList.add("portrait");
     } else {
         document.body.classList.remove("portrait");
     }
 }
-function render(){
-    canvasSize = Math.min(Math.floor(
-        (Math.min(window.innerHeight, window.innerWidth)-padding)
-    ), 800)
-    canvas.width = canvasSize;
-    canvas.height = canvasSize;
-    cellSize = canvasSize/arraySize;
-    gameOfLife = new GameOfLife(gameOfLife.array);
-    if (window.innerHeight>window.innerWidth){
-        document.body.classList.add("portrait");
-    } else {
-        document.body.classList.remove("portrait");
-    }
-}
-renderArraySizeChange();
 
 function getClientCoords(e){
-    if (e.touches){
-        return [e.touches[0].clientX, clientY = e.touches[0].clientY];
-    } else {
-        return [e.clientX, e.clientY];
-    }
+    return e.touches?.[0] ? [e.touches[0].clientX, e.touches[0].clientY] : [e.clientX, e.clientY];
 }
 
 function cellChangeClick(e){
     e.preventDefault();
     isDrawing = true;
     const rect = canvas.getBoundingClientRect();
-    const [clientX, clientY] = getClientCoords(e);
+    [clientX, clientY] = getClientCoords(e);
     const indexX = Math.floor((clientX - rect.left) / (canvas.clientWidth/arraySize));
     const indexY = Math.floor((clientY - rect.top) / (canvas.clientHeight/arraySize));
     const cellKey = `${indexX},${indexY}`;
@@ -198,14 +175,25 @@ function drawLineVertical(x0, y0, x1, y1){
 }
 
 function drawLine(x0, y0, x1, y1){
-    if (Math.abs(x1-x0)>Math.abs(y1-y0)){
-        drawLineHorizontal(x0, y0, x1, y1);
-    } else {
-        drawLineVertical(x0, y0, x1, y1);
+    let dx = Math.abs(x1-x0);
+    let dy = Math.abs(y1-y0);
+    let xi = x0<x1?1:-1;
+    let yi = y0<y1?1:-1;
+    let error = dx-dy;
+    while(true){
+        gameOfLife.toggleCell(x0, y0);
+        if (x0==x1&&y0==y1) break;
+        if (2*error>-dy){
+            error-=dy;
+            x0+=xi;
+        }
+        if (2*error<dx){
+            error+=dx;
+            y0+=yi;
+        }
     }
 }
 
-let lastX, lastY;
 function cellChangeMove(e){
     e.preventDefault();
     const rect = canvas.getBoundingClientRect();
@@ -254,7 +242,7 @@ canvas.addEventListener("touchmove",cellChangeMove, {passive:false});
 
 function start() {
     running = true;
-    handle = requestAnimationFrame(tick);
+    handle = requestAnimationFrame(loop);
     playBtn.innerText = "Pause";
 }
 
@@ -264,14 +252,13 @@ function stop() {
     playBtn.innerText = "Play";
 }
 
-let lastTime = 0;
-function tick(currentTime) {
+function loop(currentTime) {
     if (!running) return;
     if (currentTime-lastTime >=speedSlider.value){
         gameOfLife.iterate();
         lastTime = currentTime;
     }
-    handle = requestAnimationFrame(tick);
+    handle = requestAnimationFrame(loop);
 }
 function pausePlay(){
     if (!running) {
@@ -299,21 +286,16 @@ clearBtn.addEventListener("click",()=>{
     stop();
 });
 resetBtn.addEventListener("click", ()=>{
-    renderArraySizeChange();
+    render();
     stop();
-    playBtn.innerText = "Play";
 });
 drawBtn.addEventListener("click",()=>{
-    if (drawOrErase){
-        drawBtn.innerHTML = "Draw";
-    } else {
-        drawBtn.innerHTML = "Erase";
-    }
+    drawBtn.innerText = drawOrErase?"Draw":"Erase";
     drawOrErase = !drawOrErase;
 })
 
 sizeSlider.addEventListener("input", ()=>{
-    renderArraySizeChange();
+    render();
     sizeInput.value=sizeSlider.value;
 });
 sizeInput.addEventListener("change", ()=>{
@@ -321,7 +303,7 @@ sizeInput.addEventListener("change", ()=>{
     if (!isNaN(value)){
         sizeSlider.value = Math.min(sizeSlider.max, Math.max(sizeSlider.min, value));
         sizeInput.value = sizeSlider.value;
-        renderArraySizeChange();
+        render();
     } else {
         sizeSlider.value = initialSize;
         sizeInput.value = initialSize;
@@ -340,4 +322,19 @@ speedInput.addEventListener("change", ()=>{
         speedInput.value = initialSpeed;
     }
 });
-window.addEventListener("resize", render);
+window.addEventListener("resize", ()=>{
+    const canvasSize = Math.min(Math.floor(
+        (Math.min(window.innerHeight, window.innerWidth)-PADDING)
+    ), 800)
+    canvas.width = canvasSize;
+    canvas.height = canvasSize;
+    cellSize = canvasSize/arraySize;
+    gameOfLife = new GameOfLife(gameOfLife.array);
+    if (window.innerHeight>window.innerWidth){
+        document.body.classList.add("portrait");
+    } else {
+        document.body.classList.remove("portrait");
+    }
+});
+
+render();

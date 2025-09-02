@@ -150,7 +150,6 @@ function cellChangeMove(e){
 }
 
 function cellChangeStop(){
-    e.preventDefault();
     isDrawing = false;
     changedCells.clear();
     if (stoppedCauseClicked) {

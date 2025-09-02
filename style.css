@@ -5,6 +5,7 @@ html, body {
     align-items:center;
     flex-direction: column;
     background-color: gray;
+    overscroll-behavior: none;
 }
 
 .container{

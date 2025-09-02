@@ -112,11 +112,20 @@ function render(){
 }
 render();
 
-function cellChangeTouch(e){
+function getClientCoords(e){
+    if (e.touches){
+        return [e.touches[0].clientX, clientY = e.touches[0].clientY];
+    } else {
+        return [e.clientX, e.clientY];
+    }
+}
+
+function cellChangeClick(e){
     isDrawing = true;
     const rect = canvas.getBoundingClientRect();
-    const indexX = Math.floor((e.clientX - rect.left) / (canvas.clientWidth/arraySize));
-    const indexY = Math.floor((e.clientY - rect.top) / (canvas.clientHeight/arraySize));
+    const [clientX, clientY] = getClientCoords(e);
+    const indexX = Math.floor((clientX - rect.left) / (canvas.clientWidth/arraySize));
+    const indexY = Math.floor((clientY - rect.top) / (canvas.clientHeight/arraySize));
     const cellKey = `${indexX},${indexY}`;
     changedCells.add(cellKey);
     gameOfLife.toggleCell(indexX, indexY);
@@ -128,8 +137,9 @@ function cellChangeTouch(e){
 
 function cellChangeMove(e){
     const rect = canvas.getBoundingClientRect();
-    const indexX = Math.floor((e.clientX - rect.left) / cellSize);
-    const indexY = Math.floor((e.clientY - rect.top) / cellSize);
+    const [clientX, clientY] = getClientCoords(e);
+    const indexX = Math.floor((clientX - rect.left) / cellSize);
+    const indexY = Math.floor((clientY - rect.top) / cellSize);
     const cellKey = `${indexX},${indexY}`;
     if (isDrawing && !changedCells.has(cellKey)) {
         gameOfLife.toggleCell(indexX, indexY);
@@ -146,10 +156,14 @@ function cellChangeStop(){
     }
 }
 
-canvas.addEventListener("mousedown", cellChangeTouch);
+canvas.addEventListener("mousedown", cellChangeClick);
 canvas.addEventListener("mouseup", cellChangeStop);
 canvas.addEventListener("mouseleave", cellChangeStop);
 canvas.addEventListener("mousemove",cellChangeMove);
+
+canvas.addEventListener("touchstart", cellChangeClick);
+canvas.addEventListener("touchend", cellChangeStop);
+canvas.addEventListener("touchmove",cellChangeMove);
 
 function start() {
     running = true;

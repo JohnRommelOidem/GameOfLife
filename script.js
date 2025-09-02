@@ -14,6 +14,7 @@ speedInput.value = speedSlider.value;
 let arraySize;
 let probabilityArray;
 let percentAlive;
+const dpr = window.devicePixelRatio || 1;
 let canvasSize;
 let isDrawing = false, stoppedCauseClicked = false, running = false, handle = null;
 
@@ -105,8 +106,9 @@ function render(){
     canvasSize = Math.min(Math.floor(
         (Math.min(window.innerHeight, window.innerWidth)) / arraySize
     ) * arraySize, 800)
-    canvas.width = canvasSize;
-    canvas.height = canvasSize;
+    canvas.width = canvasSize*dpr;
+    canvas.height = canvasSize*dpr;
+    ctx.scale(dpr, dpr);
     cellSize = canvasSize/arraySize
     gameOfLife = new GameOfLife(probabilityArray, percentAlive);
 }

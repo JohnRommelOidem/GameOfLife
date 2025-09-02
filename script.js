@@ -103,6 +103,7 @@ function render(){
     canvas.width = canvasSize;
     canvas.height = canvasSize;
     cellSize = canvasSize/arraySize
+    stepBtn.innerText = canvasSize;
     gameOfLife = new GameOfLife(probabilityArray, percentAlive);
     if (window.innerHeight>window.innerWidth){
         document.body.classList.add("portrait");

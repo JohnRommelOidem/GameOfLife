@@ -183,11 +183,12 @@ function drawLine(x0, y0, x1, y1){
     while(true){
         gameOfLife.toggleCell(x0, y0);
         if (x0==x1&&y0==y1) break;
-        if (2*error>-dy){
+        const error2 = 2*error;
+        if (error2>-dy){
             error-=dy;
             x0+=xi;
         }
-        if (2*error<dx){
+        if (error2<dx){
             error+=dx;
             y0+=yi;
         }
